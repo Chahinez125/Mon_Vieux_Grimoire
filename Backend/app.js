@@ -1,8 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const { ObjectId } = mongoose.Types; 
 
-const book = require('./models/book')
+const Book = require('./models/book');
 
 require('dotenv').config(); // Charger les variables d'environnement à partir du fichier .env
 // Utiliser la variable d'environnement pour l'URL de MongoDB
@@ -23,19 +24,36 @@ app.use((req, res, next) => {
 
 app.use(bodyParser.json());
 
-// Définir une route de base
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
-
 // Exemple de route POST
-app.get('/api/books', (req, res, next) => {
-  book.find()
+app.get('/api/books',async (req, res,next) => {
+  Book.find()
   .then((books) => res.status(200).json(books))
   
   .catch(error => {
     res.status(400).json({ error });
 });
 });
+
+// Route pour récupérer un livre par son ID
+app.get('api/books/:id', async (req, res) => {
+  const bookId = req.params.id;
+
+  try {
+    const book = await Book.findOne(bookId);
+
+    if (!book) {
+      return res.status(404).json({ message: 'Aucun livre trouvé avec cet ID' });
+    }
+
+    res.status(200).json(book);
+  } catch (error) {
+    console.error('Erreur lors de la recherche du livre par ID:', error);
+    res.status(500).json({ message: 'Erreur serveur lors de la recherche du livre' });
+  }
+});
+
+
+
+
 
 module.exports = app;
