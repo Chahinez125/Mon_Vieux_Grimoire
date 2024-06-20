@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const { ObjectId } = mongoose.Types; 
 
 const Book = require('./models/book');
+const book = require('./models/book');
 
 require('dotenv').config(); // Charger les variables d'environnement à partir du fichier .env
 // Utiliser la variable d'environnement pour l'URL de MongoDB
@@ -33,23 +34,21 @@ app.get('/api/books',async (req, res,next) => {
     res.status(400).json({ error });
 });
 });
-
+app.put('/api/books/:id', (req, res, next) => {
+  Book.updateOne({ _id: req.params.id },{...req.body, _id: req.params.id})
+    .then(() => res.status(200).json({ message: 'Objet modifié!'}))
+    .catch(error => res.status(404).json({ error }));
+});
+app.delete('/api/books/:id', (req, res, next) => {
+  Book.deleteOne({ _id: req.params.id })
+  .then(() => res.status(200).json({ message: 'Objet supprimé!'}))
+    .catch(error => res.status(404).json({ error }));
+});
 // Route pour récupérer un livre par son ID
-app.get('api/books/:id', async (req, res) => {
-  const bookId = req.params.id;
-
-  try {
-    const book = await Book.findOne(bookId);
-
-    if (!book) {
-      return res.status(404).json({ message: 'Aucun livre trouvé avec cet ID' });
-    }
-
-    res.status(200).json(book);
-  } catch (error) {
-    console.error('Erreur lors de la recherche du livre par ID:', error);
-    res.status(500).json({ message: 'Erreur serveur lors de la recherche du livre' });
-  }
+app.get('/api/books/:id', (req, res, next) => {
+  Book.findOne({ _id: req.params.id })
+    .then(book => res.status(200).json(book))
+    .catch(error => res.status(404).json({ error }));
 });
 
 
