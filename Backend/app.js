@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
+const book = require('./models/book')
+
 require('dotenv').config(); // Charger les variables d'environnement à partir du fichier .env
 // Utiliser la variable d'environnement pour l'URL de MongoDB
 const mongoDBUri = process.env.MONGODB_URI;
@@ -27,8 +29,13 @@ app.get('/', (req, res) => {
 });
 
 // Exemple de route POST
-app.post('/test', (req, res) => {
-  res.status(200).send('Post request received');
+app.get('/api/books', (req, res, next) => {
+  book.find()
+  .then((books) => res.status(200).json(books))
+  
+  .catch(error => {
+    res.status(400).json({ error });
+});
 });
 
 module.exports = app;
