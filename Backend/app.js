@@ -2,11 +2,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const { ObjectId } = mongoose.Types; 
+const booksRouters = require('./routes/book');
 
-const Book = require('./models/book');
-const book = require('./models/book');
 
-require('dotenv').config(); // Charger les variables d'environnement à partir du fichier .env
+require('dotenv').config(); // 
 // Utiliser la variable d'environnement pour l'URL de MongoDB
 const mongoDBUri = process.env.MONGODB_URI;
 
@@ -24,32 +23,8 @@ app.use((req, res, next) => {
 });
 
 app.use(bodyParser.json());
+app.use('/api/books', booksRouters);
 
-// Exemple de route POST
-app.get('/api/books',async (req, res,next) => {
-  Book.find()
-  .then((books) => res.status(200).json(books))
-  
-  .catch(error => {
-    res.status(400).json({ error });
-});
-});
-app.put('/api/books/:id', (req, res, next) => {
-  Book.updateOne({ _id: req.params.id },{...req.body, _id: req.params.id})
-    .then(() => res.status(200).json({ message: 'Objet modifié!'}))
-    .catch(error => res.status(404).json({ error }));
-});
-app.delete('/api/books/:id', (req, res, next) => {
-  Book.deleteOne({ _id: req.params.id })
-  .then(() => res.status(200).json({ message: 'Objet supprimé!'}))
-    .catch(error => res.status(404).json({ error }));
-});
-// Route pour récupérer un livre par son ID
-app.get('/api/books/:id', (req, res, next) => {
-  Book.findOne({ _id: req.params.id })
-    .then(book => res.status(200).json(book))
-    .catch(error => res.status(404).json({ error }));
-});
 
 
 
