@@ -16,4 +16,24 @@ bycrpt.hash(req.body.password, 10)
 };
 exports.login = (req, res, next) =>{
     //pour connecter les utilisateur
-}
+    User.findOne({ email: req.body.email })
+    .then(user => {   //si elle est null 
+        if (!user){
+            return res.status(401).json({ message: 'paire identifiant/mot de passe incorrecte' });
+            } else{
+                bycrpt.compare(req.body.password, user.password)
+                .then(valid => {
+                    if (!valid){
+                        return res.status(401).json({ message: 'paire identifiant/mot de passe incorrecte'});
+                    }
+                    res.status(200).json({
+                        userId: user._id,
+                        token: 'TOKEN'
+                        });
+                    }) 
+                    .catch(error => res.status(500).json({ error }));
+                    }
+                    })
+                    .catch(error => res.status(500).json({ error }));
+
+                };
