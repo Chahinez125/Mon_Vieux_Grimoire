@@ -21,8 +21,9 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
   next();
 });
-
-app.use(bodyParser.json());
+// Middleware pour parser les données URL-encoded
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use('/api/books', booksRouters);
 app.use('/api/auth', userRoutes)
 
