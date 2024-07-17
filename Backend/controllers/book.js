@@ -1,7 +1,7 @@
 const Book = require("../models/Book");
 const fs = require('fs');
 
-exports.createBook = (req, res) => {
+exports.createBook = (req, res, next) => {
     const bookObject = JSON.parse(req.body.book);
     delete bookObject._id;
     delete bookObject.userId;
@@ -22,7 +22,7 @@ exports.createBook = (req, res) => {
     });
 };
 
-exports.modifyBook = (req, res) => {
+exports.modifyBook = (req, res, next) => {
     const bookObject = req.file ? {
         ...JSON.parse(req.body.book),
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
@@ -52,7 +52,7 @@ exports.modifyBook = (req, res) => {
         });
 };
 
-exports.deleteBook = (req, res) => {
+exports.deleteBook = (req, res, next) => {
     Book.findOne({ _id: req.params.id })
         .then(book => {
             if (book.userId != req.auth.userId) {
@@ -79,7 +79,7 @@ exports.deleteBook = (req, res) => {
         });
 };
 
-exports.getOneBook = (req, res) => {
+exports.getOneBook = (req, res, next) => {
     Book.findOne({ _id: req.params.id })
         .then(book => {
             console.log("Livre trouvé:", book);
@@ -148,7 +148,7 @@ exports.giveRating = (req, res, next) => {
         });
 };
 
-exports.getBestRating = (res) => {
+exports.getBestRating = (req, res, next) => {
     Book.find()
         .sort({ averageRating: -1 })
         .limit(3)
