@@ -47,7 +47,7 @@ module.exports.optimizeImage = (req, res, next ) => {
         console.log(`Image ${fileName} optimisée avec succès !`);
         // Supprime le fichier original et remplace par le nouveau dans le dossier images
         fs.unlink(filePath, () => {
-            //req.file.path = outputFilePath;
+            req.file.path = outputFilePath;
             console.log(`Image ${fileName} supprimée avec succès !`);
             next();
         });
